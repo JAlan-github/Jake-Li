@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        canvas {
+            border: solid 10px rgb(8, 75, 138);
+            background-color: rgb(47, 255, 203);
+        }
+    </style>
+</head>
+
+<body onload="startGame ();">
+
+    <script>
+        var myGamePiece;
+        var myObstacles = [];
+        function startGame() {
+            myGameArea.start();
+            myGamePiece = new component(50, 50, 'knight3-128.png', 20, 130, 'image');
+            // myObstacle = new component(10, 200, 'skyblue', 300, 120);
+        }
+
+
+        var myGameArea = {
+            canvas: document.createElement('canvas'),
+            start: function () {
+                this.canvas.width = 480;
+                this.canvas.height = 270;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+
+                this.frameNo = 0;
+                this.interval = setInterval(updateGameArea, 10);
+                window.addEventListener('keydown', function (e) {
+                    myGameArea.key = e.keyCode;
+                });
+                window.addEventListener('keyup', function (e) {
+                    myGameArea.key = false;
+                });
+            },
+            clear: function () {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            stop: function () {
+                clearInterval(this.interval);
+            }
+        };
+
+        function component(width, height, color, x, y, type) {
+            this.type = type;
+            if (type == 'image') {
+                this.image = new Image();
+                this.image.src = color;
+            }
+
+            this.width = width;
+            this.height = height;
+            this.x = x;
+            this.y = y;
+            this.speedX = 0;
+            this.speedY = 0;
+            this.update = function () {
+                ctx = myGameArea.context;
+
+                if (type == "image") {
+                    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+                } else {
+                    ctx.fillStyle = color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            };
+            this.newPos = function () {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+
+            };
+
+            this.crashWith = function (obj) {
+                var crash = true;
+
+                if (this.y + this.height < obj.y) {
+                    crash = false;
+                } else if (this.y > obj.y + obj.height) {
+                    crash = false;
+                } else if (this.x + this.width < obj.x) {
+                    crash = false;
+                } else if (this.x > obj.x + obj.width) {
+                    crash = false;
+                }
+                return crash;
+
+            }
+
+
+        }
+
+        function updateGameArea() {
+            for (var i = 0; i < myObstacles.length; i++) {
+                if (myGamePiece.crashWith(myObstacles[i])) {
+                    myGameArea.stop();
+                    alert("You couldn't save Blue ~~~");
+                    return;
+                }
+
+            }
+
+            myGameArea.clear();
+            myGameArea.frameNo += 1;
+            myGamePiece.speedX = 0;
+            myGamePiece.speedY = 0;
+
+            // generate random obstacles with random gap
+            var topX, topY, bottomX, bottomY;
+            var topWidth, topHeight, bottomWidth, bottomHeight;
+            var gap;
+
+            console.log(myGameArea.frameNo);
+            if (everyInterval(150)) {
+                gap = Math.floor(Math.random() * 50 + 50);
+                topWidth = bottomWidth = 10;
+                topHeight = Math.floor(Math.random() * 180 + 20);
+                bottomHeight = myGameArea.canvas.height - topHeight - gap;
+
+                topX = bottomX = myGameArea.canvas.width;
+                topY = 0;
+                bottomY = topHeight + gap;
+
+                myObstacles.push(new component(topWidth, topHeight, 'skyblue', topX, topY));
+                myObstacles.push(new component(bottomWidth, bottomHeight, 'purple', bottomX, bottomY));
+            }
+
+            if (myGameArea.key == 38) {  // up
+                myGamePiece.speedY = -1;
+            } else if (myGameArea.key == 40) {  // down
+                myGamePiece.speedY = 1;
+            } else if (myGameArea.key == 37) {  // left
+                myGamePiece.speedX = -1;
+            } else if (myGameArea.key == 39) {  //right
+                myGamePiece.speedX = 1;
+            }
+
+            myGamePiece.newPos();
+            myGamePiece.update();
+
+            // myObstacle.x -= 1;
+            // myObstacle.update();
+            for (var i = 0; i < myObstacles.length; i++) {
+                myObstacles[i].x -= 1;
+                myObstacles[i].update();
+            }
+        }
+        function everyInterval(n) {
+            if (myGameArea.frameNo % n == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    </script>
+
+    <p>I lost my friend Blue. Can you help
+        me, use the arrow key to find Blue.
+        Good Luck....... </p>
+</body>
+
+</html>

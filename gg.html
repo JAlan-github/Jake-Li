@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+</html>
+
+<head>
+    <script>
+        function guess() {
+            var guessNumber = document.getElementById('txt').value;
+            var validationonResult = validate(guessNumber);
+
+            var randomResult = Math.floor(Math.random() * 10) + 1;
+            if (validationonResult) {
+                if (guessNumber == rondomResult) {
+                    document.write("Great Job, you get result: 6.5.")
+                }
+            }
+        }
+
+
+        function validate(userInput) {
+            if (isNaN(userInput)) {
+                alert("Please input a number.")
+            } else if (userInput < 0) {
+                alert("Please input a nuber between 0 to 10")
+            } else if (userInput > 10) {
+                alert("Please input a number between 0 to 10")
+            } else {
+                return true;
+            }
+
+            return false;
+        }
+
+    </script>
+</head>
+
+<body>
+    <h1>Make a number guess between 0 to 10</h1>
+    <input type="text" id="txt">
+    <button type="button" onclick="guess();">Guess</button>
+    </input>
+</body>
+
+</html>
